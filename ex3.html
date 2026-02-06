@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KCET Learning - Quiz App</title>
+
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        .quiz-container {
+            width: 450px;
+            margin: 60px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .question {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .options label {
+            display: block;
+            padding: 8px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .options input {
+            margin-right: 10px;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        button {
+            padding: 8px 15px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .result {
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="quiz-container">
+    <h2>KCET Learning Quiz</h2>
+
+    <div id="quiz">
+        <div class="question"></div>
+        <div class="options"></div>
+
+        <div class="buttons">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+
+        <div class="error">Please select an answer!</div>
+    </div>
+
+    <div class="result">
+        <h3>Quiz Completed 🎉</h3>
+        <p id="score"></p>
+        <button id="restart">Restart Quiz</button>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+
+    // Quiz Questions
+ let questions = [
+    {
+        question: "What does HTML stand for?",
+        options: [
+            "Hyper Text Markup Language",
+            "High Text Machine Language",
+            "Hyper Tool Multi Language",
+            "None of the above"
+        ],
+        answer: 0
+    },
+    {
+        question: "Which language is used for styling web pages?",
+        options: [
+            "HTML",
+            "jQuery",
+            "CSS",
+            "XML"
+        ],
+        answer: 2
+    },
+    {
+        question: "Which is a JavaScript library?",
+        options: [
+            "Java",
+            "Python",
+            "jQuery",
+            "PHP"
+        ],
+        answer: 2
+    },
+    {
+        question: "Which tag is used to include JavaScript in HTML?",
+        options: [
+            "<js>",
+            "<javascript>",
+            "<script>",
+            "<code>"
+        ],
+        answer: 2
+    },
+    {
+        question: "What does CSS stand for?",
+        options: [
+            "Creative Style System",
+            "Cascading Style Sheets",
+            "Colorful Style Sheets",
+            "Computer Style Sheets"
+        ],
+        answer: 1
+    },
+    {
+        question: "Which symbol is used for jQuery?",
+        options: [
+            "#",
+            "$",
+            "@",
+            "%"
+        ],
+        answer: 1
+    },
+    {
+        question: "Which HTML attribute is used to define inline styles?",
+        options: [
+            "font",
+            "style",
+            "class",
+            "css"
+        ],
+        answer: 1
+    },
+    {
+        question: "Which method is used to select elements in jQuery?",
+        options: [
+            "getElement()",
+            "$()",
+            "querySelector()",
+            "select()"
+        ],
+        answer: 1
+    },
+    {
+        question: "Which event occurs when a user clicks an element?",
+        options: [
+            "onmouseover",
+            "onchange",
+            "onclick",
+            "onload"
+        ],
+        answer: 2
+    },
+    {
+        question: "Which jQuery function is used for animation?",
+        options: [
+            "animate()",
+            "slideUp()",
+            "fadeIn()",
+            "All of the above"
+        ],
+        answer: 3
+    }
+];
+    let currentIndex = 0;
+    let userAnswers = [];
+
+    // Load Question
+    function loadQuestion(index) {
+        $(".question").text(questions[index].question);
+        $(".options").empty();
+
+        $.each(questions[index].options, function (i, option) {
+            let checked = userAnswers[index] == i ? "checked" : "";
+            $(".options").append(`
+                <label>
+                    <input type="radio" name="option" value="${i}" ${checked}>
+                    ${option}
+                </label>
+            `);
+        });
+
+        $("#prev").toggle(index !== 0);
+    }
+
+    loadQuestion(currentIndex);
+
+    // Next Button
+    $("#next").click(function () {
+        let selected = $("input[name='option']:checked").val();
+
+        if (selected === undefined) {
+            $(".error").fadeIn();
+            return;
+        }
+
+        $(".error").hide();
+        userAnswers[currentIndex] = parseInt(selected);
+
+        if (currentIndex < questions.length - 1) {
+            currentIndex++;
+            loadQuestion(currentIndex);
+        } else {
+            showResult();
+        }
+    });
+
+    // Previous Button
+    $("#prev").click(function () {
+        currentIndex--;
+        loadQuestion(currentIndex);
+    });
+
+    // Show Result
+    function showResult() {
+        let score = 0;
+
+        $.each(questions, function (i, q) {
+            if (userAnswers[i] === q.answer) {
+                score++;
+            }
+        });
+
+        $("#quiz").hide();
+        $(".result").fadeIn();
+        $("#score").text(`You answered ${score} out of ${questions.length} correctly`);
+    }
+
+    // Restart Quiz
+    $("#restart").click(function () {
+        currentIndex = 0;
+        userAnswers = [];
+        $(".result").hide();
+        $("#quiz").fadeIn();
+        loadQuestion(currentIndex);
+    });
+
+});
+</script>
+
+</body>
+</html>
